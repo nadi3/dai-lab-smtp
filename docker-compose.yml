@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  maildev:
+    image: maildev/maildev  # The official MailDev Docker image
+    container_name: maildev  # Name of the container
+    ports:
+      - "1025:1025"  # Map MailDev's SMTP port 1025 to localhost:1025
+      - "1080:1080"  # Map MailDev's web interface port 1080 to localhost:1080
+    networks:
+      - maildev-net  # Define network
+
+networks:
+  maildev-net:
+    driver: bridge  # The bridge driver creates a private internal network on your machine
+
+# commands from root directory
+# docker-compose up
+# docker-compose down
