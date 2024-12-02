@@ -1,3 +1,12 @@
+package ch.heig.dai.lab.smtp;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.List;
+
 public class SmtpClient {
     private final String serverAddress;
     private final int serverPort;
@@ -18,7 +27,7 @@ public class SmtpClient {
      * @return the response from the server
      * @throws IOException
      */
-    private String readResponse() throws IOException {
+    private String readResponse(BufferedReader reader) throws IOException {
         String response = reader.readLine();
         System.out.println("Server: " + response);
         return response;
@@ -29,11 +38,11 @@ public class SmtpClient {
      * @param command the command to send
      * @throws IOException if an I/O error occurs
      */
-    private void sendCommand(String command) throws IOException {
+    private void sendCommand(String command, BufferedReader reader, PrintWriter writer) throws IOException {
         System.out.println("Client: " + command);
         writer.write(command + END_OF_LINE);
         writer.flush();
-        String response = readResponse();
+        String response = readResponse(reader);
 
         if (!response.startsWith("2") && !response.startsWith("3")) {
             throw new IOException("SMTP error: " + response);
@@ -48,21 +57,24 @@ public class SmtpClient {
      * @param body the body of the email
      * @throws IOException if an I/O error occurs
      */
-    public void sendEmail(String from, String to, String subject, String body) throws IOException {
+    public void sendEmail(String from, List<String> to, String subject, String body,
+                          BufferedReader reader, PrintWriter writer) throws IOException {
         // Read greeting
-        readResponse();
+        readResponse(reader);
 
         // HELO command
-        sendCommand("HELO localhost");
+        sendCommand("HELO localhost", reader, writer);
 
         // MAIL FROM command
-        sendCommand("MAIL FROM:<" + from + ">");
+        sendCommand("MAIL FROM:<" + from + ">", reader, writer);
 
         // RCPT TO command
-        sendCommand("RCPT TO:<" + to + ">");
+        for (String recipient : to) {
+            sendCommand("RCPT TO:<" + recipient + ">", reader, writer);
+        }
 
         // DATA command
-        sendCommand("DATA");
+        sendCommand("DATA", reader, writer);
         writer.write("Subject: " + subject + END_OF_LINE);
         writer.write(body + END_OF_LINE);
         writer.flush();
@@ -70,23 +82,23 @@ public class SmtpClient {
         writer.flush();
 
         // QUIT command
-        sendCommand("QUIT");
+        sendCommand("QUIT", reader, writer);
 
-        // Close the socket
-        socket.close();
     }
 
     /**
      * Send a prank
      * @param prank the prank to send
-     * @throws IOException if an I/O error occurs
      */
-    public void sendPrank(Email prank) throws IOException {
+    public void sendPrank(Email prank) {
         try {
             Socket socket = new Socket(serverAddress, serverPort);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            client.sendEmail(prank.getSender(), prank.getRecipients(), prank.getMessage().getSubject(), prank.getMessage().getBody());
+            sendEmail(prank.getSender(), prank.getRecipients(), prank.getSubject(),
+                prank.getBody(), in, out);
+            // Close the socket
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

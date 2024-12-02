@@ -1,4 +1,7 @@
+package ch.heig.dai.lab.smtp;
+
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Represents an email

@@ -1,4 +1,4 @@
-package main;
+package ch.heig.dai.lab.smtp;
 
 import java.util.*;
 import java.io.*;
