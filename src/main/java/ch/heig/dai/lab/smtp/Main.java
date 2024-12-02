@@ -8,7 +8,7 @@ public class Main {
         int SMTP_PORT = 1025;               // MailDev's SMTP port
 
         SmtpClient client = new SmtpClient(SMTP_SERVER, SMTP_PORT);
-        List<Email> emailList = PrankGenerator.generatePranks(3); //TODO read argument
+        List<Email> emailList = PrankGenerator.generatePranks(1); //TODO read argument
         for (Email email : emailList) {
             client.sendPrank(email);
         }

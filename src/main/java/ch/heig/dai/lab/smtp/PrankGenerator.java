@@ -20,13 +20,18 @@ public class PrankGenerator {
                      new FileInputStream(MESSAGES_FILE)))) {
 
             String victims = victimsReader.readLine();
-            List<String> victimsList = Arrays.asList(victims.split(","));
+            List<String> victimsList = Arrays.asList(victims.split(", "));
             Collections.shuffle(victimsList);
 
             int[] groupSizes = setGroupSizes(victimsList.size(), numberOfGroups);
 
-            String messages = messagesReader.readLine();
-            List<String> messagesList = Arrays.asList(messages.split(MESSAGE_SEPARATOR));
+            StringBuilder sb = new StringBuilder();
+            String line = messagesReader.readLine();
+            while (null != line) {
+                sb.append(line).append("\n");
+                line = messagesReader.readLine();
+            }
+            List<String> messagesList = Arrays.asList(sb.toString().split(MESSAGE_SEPARATOR));
 
             List<Email> emails = new ArrayList<>();
             for (int i = 0; i < numberOfGroups; i++) {

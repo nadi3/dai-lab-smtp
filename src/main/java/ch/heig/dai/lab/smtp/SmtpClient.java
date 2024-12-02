@@ -75,11 +75,8 @@ public class SmtpClient {
 
         // DATA command
         sendCommand("DATA", reader, writer);
-        writer.write("Subject: " + subject + END_OF_LINE);
-        writer.write(body + END_OF_LINE);
-        writer.flush();
-        writer.write("." + END_OF_LINE);
-        writer.flush();
+        String data = "Subject: " + subject + END_OF_LINE + body + END_OF_LINE + END_OF_LINE + ".";
+        sendCommand(data, reader, writer);
 
         // QUIT command
         sendCommand("QUIT", reader, writer);
