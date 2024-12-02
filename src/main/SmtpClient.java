@@ -81,7 +81,7 @@ public class SmtpClient {
      * @param prank the prank to send
      * @throws IOException if an I/O error occurs
      */
-    public void sendPrank(Prank prank) throws IOException {
+    public void sendPrank(Email prank) throws IOException {
         try {
             Socket socket = new Socket(serverAddress, serverPort);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
